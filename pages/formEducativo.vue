@@ -2,6 +2,12 @@
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 
+const { logout } = useFirebaseAuth();
+
+definePageMeta({
+  middleware: 'auth' // Redirige a usuarios autenticados fuera de esta página
+});
+
 const links = [{
   label: 'Home',
   icon: 'i-heroicons-home',
@@ -29,13 +35,19 @@ const optionsCourse = [
   { label: '10°', value: 'option-10' },
   { label: '11°', value: 'option-11' },
 ]
+const optionsPeriod = [
+  { label: 'period 1', value: 'option-1' },
+  { label: 'period 2', value: 'option-2' },
+  { label: 'period 3', value: 'option-3' },
+  { label: 'period 4', value: 'option-4' },
+]
 
 const state = reactive({
   selectCourse: undefined,
+  selectPeriod: undefined,
   selectSubject: undefined,
-  course: undefined,
-  inputMenu: undefined,
   dba: undefined,
+  contents: undefined,
   targetPeriod: undefined,
   toggle: undefined,
 })
@@ -44,14 +56,14 @@ const schema = z.object({
   selectCourse: z.string().refine((value: string) => !!value, {
     message: 'Select a course',
   }),
+  selectPeriod: z.string().refine((value: string) => !!value, {
+    message: 'Select a course',
+  }),
   selectSubject: z.string().refine((value: string) => !!value, {
     message: 'Select a subject',
   }),
-  course: z.string().min(10),
-  inputMenu: z.any().refine((option: { value?: string }) => !!option?.value, {
-    message: 'Select Option 2',
-  }),
   dba: z.string().min(10),
+  contents: z.string().min(10),
   targetPeriod: z.string().min(10),
   toggle: z.boolean().refine((value: boolean) => value, {
     message: 'Toggle me',
@@ -70,7 +82,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
   <div>
-    <UBreadcrumb :links="links" />
+    <div class=" flex justify-between">
+      <UBreadcrumb :links="links" />
+      <UButton class="" @click="logout">
+        Logout
+      </UButton>
+    </div>
 
     <UForm ref="form" :schema="schema" :state="state" class="space-y-4 mt-3" @submit="onSubmit">
 
@@ -85,16 +102,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <UFormGroup name="dba" label="DBA">
         <UTextarea v-model="state.dba" />
       </UFormGroup>
+
       <UFormGroup name="targetPeriod" label="Target per period">
         <UTextarea v-model="state.targetPeriod" />
       </UFormGroup>
 
-      <UFormGroup name="course" label="Course">
-        <UInput v-model="state.course" placeholder="Enter your course here" />
+      <UFormGroup name="selectPeriod" label="period">
+        <USelect v-model="state.selectPeriod" placeholder="select Course..." :options="optionsPeriod" />
       </UFormGroup>
 
-      <UFormGroup name="inputMenu" label="subject">
-        <UInputMenu v-model="state.inputMenu" :options="options" placeholder="Enter your subject here" />
+      <UFormGroup name="contents" label="contents">
+        <UTextarea v-model="state.contents" />
       </UFormGroup>
 
       <UFormGroup name="toggle" label="Toggle">

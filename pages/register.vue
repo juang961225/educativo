@@ -5,13 +5,16 @@ import { useRouter } from 'vue-router';
 
 const { register } = useFirebaseAuth();
 
-
+const toast = useToast()
 const router = useRouter();
 
 const redirectTo = () => {
   router.push('/login');
 };
 
+definePageMeta({
+  middleware: 'auth' // Redirige a usuarios autenticados fuera de esta página
+});
 
 const links = [{
   label: 'Home',
@@ -31,12 +34,20 @@ type Schema = z.output<typeof schema>
 
 const state = reactive({
   email: undefined,
-  password: undefined
+  password: undefined,
+  passwordConfirm: undefined,
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     await register(event.data.email, event.data.password);
+    toast.add({
+      title: "To Home Page",
+      timeout:1000,
+      callback: () => {
+        router.push("/")
+      }
+    })
   } catch (error) {
     console.log(error);
 
@@ -59,11 +70,14 @@ const form = reactive({ email: 'mail@example.com', password: 'password' })
             <UInput v-model="state.email" />
           </UFormGroup>
 
+          <UFormGroup label="confirm password" name="passwordConfirm">
+            <UInput v-model="state.passwordConfirm" type="password" />
+          </UFormGroup>
           <UFormGroup label="Password" name="password">
             <UInput v-model="state.password" type="password" />
           </UFormGroup>
 
-          <UButton type="submit" @click="toast.add({ title: 'registered', timeout: 1000 })">
+          <UButton type="submit">
             register
           </UButton>
         </UForm>
@@ -76,7 +90,6 @@ const form = reactive({ email: 'mail@example.com', password: 'password' })
         </div>
       </UCard>
     </div>
-    <UNotifications />
   </div>
 </template>
 

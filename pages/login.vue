@@ -9,7 +9,7 @@ const toast = useToast()
 const router = useRouter();
 
 const redirectTo = () => {
-  router.push('/register');
+  router.push('/login');
 };
 
 
@@ -37,6 +37,13 @@ const state = reactive({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     await login(event.data.email, event.data.password);
+    toast.add({
+      title: "To Home Page",
+      timeout:1000,
+      callback: () => {
+        router.push("/")
+      }
+    })
   } catch (error) {
     console.log(error);
 
@@ -60,7 +67,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             <UInput v-model="state.password" type="password" />
           </UFormGroup>
 
-          <UButton type="submit" @click="toast.add({ title: 'To Home Page', timeout: 1000 })">
+          <UButton type="submit">
             Login
           </UButton>
         </UForm>
@@ -73,7 +80,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </div>
       </UCard>
     </div>
-    <UNotifications />
   </div>
 </template>
 
