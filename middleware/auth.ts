@@ -1,10 +1,19 @@
-// middleware/auth.js
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  const { currentUser } = useFirebaseAuth(); // Obtener el estado de autenticación
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  if (process.client) { // Solo ejecuta esto en el cliente
+    const auth = getAuth();
+    
+    const checkAuth = new Promise((resolve) => {
+      onAuthStateChanged(auth, (user) => {
+        resolve(user);
+      });
+    });
 
-  if (!currentUser.value) {
-    // Si el usuario no está autenticado, redirigirlo a /login
-    return navigateTo('/login');
+    const user = await checkAuth;
+
+    if (!user) {
+      return navigateTo('/login');
+    }
   }
 });
