@@ -41,23 +41,23 @@ const options = [
   { label: 'educación física', value: 'educación-física' },
 ]
 const optionsCourse = [
-  { label: '1°', value: 'option-1' },
-  { label: '2°', value: 'option-2' },
-  { label: '3°', value: 'option-3' },
-  { label: '4°', value: 'option-4' },
-  { label: '5°', value: 'option-5' },
-  { label: '6°', value: 'option-6' },
-  { label: '7°', value: 'option-7' },
-  { label: '8°', value: 'option-8' },
-  { label: '9°', value: 'option-9' },
-  { label: '10°', value: 'option-10' },
-  { label: '11°', value: 'option-11' },
+  { label: '1°', value: '1°' },
+  { label: '2°', value: '2°' },
+  { label: '3°', value: '3°' },
+  { label: '4°', value: '4°' },
+  { label: '5°', value: '5°' },
+  { label: '6°', value: '6°' },
+  { label: '7°', value: '7°' },
+  { label: '8°', value: '8°' },
+  { label: '9°', value: '9°' },
+  { label: '10°', value: '10°' },
+  { label: '11°', value: '11°' },
 ]
 const optionsPeriod = [
-  { label: 'period 1', value: 'option-1' },
-  { label: 'period 2', value: 'option-2' },
-  { label: 'period 3', value: 'option-3' },
-  { label: 'period 4', value: 'option-4' },
+  { label: 'period 1', value: 'period-1' },
+  { label: 'period 2', value: 'period-2' },
+  { label: 'period 3', value: 'period-3' },
+  { label: 'period 4', value: 'period-4' },
 ]
 
 const state = reactive({
