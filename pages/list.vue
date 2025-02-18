@@ -41,7 +41,6 @@ const people = computed<FormSubmission[]>(() =>
     id: sub.id,
     contents: sub.contents ?? '',
     course: sub.course ?? '',
-    createdAt: sub.createdAt ?? '',
     dba: sub.dba ?? '',
     description: sub.description ?? '',
     indicator: sub.indicator ?? '',
@@ -61,12 +60,11 @@ watch(people, (newPeople) => {
 });
 
 const columns: Column[] = [
+  { key: 'id', label: 'ID' },
   { key: 'contents', label: 'Contents' },
   { key: 'course', label: 'Course' },
-  { key: 'createdAt', label: 'Created At' },
   { key: 'dba', label: 'DBA' },
   { key: 'description', label: 'Description' },
-  { key: 'id', label: 'ID' },
   { key: 'indicator', label: 'Indicator' },
   { key: 'materialLink', label: 'Material Link' },
   { key: 'materialName', label: 'Material Name' },
