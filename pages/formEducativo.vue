@@ -152,7 +152,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     toast.add({
       title: "Formulario creado exitosamente",
       description: `ID del documento: ${docId}`,
-      timeout: 3000,
+      timeout: 1000,
     });
 
     resetForm();
@@ -161,7 +161,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       title: "Error al crear el formulario",
       description: error.message || "Hubo un problema al guardar la información.",
       color: "red",
-      timeout: 3000,
+      timeout: 1000,
     });
   } finally {
     loading.value = false;
@@ -181,41 +181,65 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     <UForm ref="form" :schema="schema" :state="state" class="space-y-4 mt-3" @submit="onSubmit">
 
-      <UFormGroup name="selectCourse" label="Course">
-        <USelect v-model="state.selectCourse" placeholder="select Course..." :options="optionsCourse" />
-      </UFormGroup>
+      <div class="grid grid-cols-4 gap-4">
+        <div class="">
+          <UFormGroup name="selectCourse" label="Course">
+            <USelect v-model="state.selectCourse" placeholder="select Course..." :options="optionsCourse" />
+          </UFormGroup>
+        </div>
 
-      <UFormGroup name="selectSubject" label="Subject">
-        <USelect v-model="state.selectSubject" placeholder="select Subject..." :options="options" />
-      </UFormGroup>
+        <div class="">
+          <UFormGroup name="selectSubject" label="Subject">
+            <USelect v-model="state.selectSubject" placeholder="select Subject..." :options="options" />
+          </UFormGroup>
+        </div>
 
-      <UFormGroup name="dba" label="DBA">
-        <UTextarea v-model="state.dba" />
-      </UFormGroup>
+        <div class="">
+          <UFormGroup name="selectPeriod" label="period">
+            <USelect v-model="state.selectPeriod" placeholder="select Course..." :options="optionsPeriod" />
+          </UFormGroup>
+        </div>
 
-      <UFormGroup name="targetPeriod" label="Target per period">
-        <UTextarea v-model="state.targetPeriod" />
-      </UFormGroup>
+        <div class="">
+          <UFormGroup name="score" label="number of activity">
+            <UInput v-model="state.score" type="number" placeholder="number of activity" />
+          </UFormGroup>
+        </div>
+      </div>
 
-      <UFormGroup name="selectPeriod" label="period">
-        <USelect v-model="state.selectPeriod" placeholder="select Course..." :options="optionsPeriod" />
-      </UFormGroup>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="">
+          <UFormGroup name="indicator" label="indicator">
+            <UTextarea v-model="state.indicator" />
+          </UFormGroup>
+        </div>
 
-      <UFormGroup name="contents" label="contents">
-        <UTextarea v-model="state.contents" />
-      </UFormGroup>
+        <div class="">
+          <UFormGroup name="description" label="description">
+            <UTextarea v-model="state.description" />
+          </UFormGroup>
+        </div>
+      </div>
 
-      <UFormGroup name="indicator" label="indicator">
-        <UTextarea v-model="state.indicator" />
-      </UFormGroup>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="">
+          <UFormGroup name="dba" label="DBA">
+            <UTextarea v-model="state.dba" />
+          </UFormGroup>
+        </div>
 
-      <UFormGroup name="score" label="number of activity">
-        <UInput v-model="state.score" type="number" placeholder="number of activity" />
-      </UFormGroup>
+        <div class="">
+          <UFormGroup name="targetPeriod" label="Target per period">
+            <UTextarea v-model="state.targetPeriod" />
+          </UFormGroup>
+        </div>
 
-      <UFormGroup name="description" label="description">
-        <UTextarea v-model="state.description" />
-      </UFormGroup>
+        <div class="">
+          <UFormGroup name="contents" label="contents">
+            <UTextarea v-model="state.contents" />
+          </UFormGroup>
+        </div>
+      </div>
 
       <div class="grid grid-cols-3 gap-4">
         <!-- Primera columna: Inputs de Material Name y Material Link -->

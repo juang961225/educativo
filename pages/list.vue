@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const router = useRouter();
 
 interface FormSubmission {
   id: string;
@@ -19,6 +20,7 @@ interface FormSubmission {
 interface Column {
   key: string;
   label?: string;
+  sortable?: boolean;
 }
 
 const columns: Column[] = [
@@ -35,19 +37,26 @@ const columns: Column[] = [
   { key: 'score', sortable: true, label: 'Score' },
   { key: 'subject', sortable: true, label: 'Subject' },
   { key: 'targetPeriod', sortable: true, label: 'Target Period' },
-  { key: 'actions' }
+  { key: 'actions', label: 'Actions'}
 ];
 
-const selectedColumns = ref([...columns])
+
+
+const selectedColumns: Ref<Column[]> = ref([...columns]);
 const { getFormSubmissions } = useFirebaseDB();
 const formSubmissions: Ref<FormSubmission[]> = ref([]);
 
+const status = ref<'pending' | 'success' | 'error'>('pending');
+
 const fetchData = async (): Promise<void> => {
   try {
+    status.value = 'pending';
     const data = await getFormSubmissions();
     formSubmissions.value = data as FormSubmission[];
+    status.value = 'success';
   } catch (error) {
     console.error('Error:', error);
+    status.value = 'error';
   }
 };
 fetchData();
@@ -74,30 +83,61 @@ watch(people, (newPeople) => {
   console.log('Datos transformados:', newPeople);
 });
 
-const items = (row: FormSubmission) => [
+const items = (row: FormSubmission): Array<Array<{ label: string; icon: string; click?: () => void }>> => [
   [{ label: 'Edit', icon: 'i-heroicons-pencil-square-20-solid', click: () => console.log('Edit', row.id) }],
   [{ label: 'Duplicate', icon: 'i-heroicons-document-duplicate-20-solid' }],
   [{ label: 'Delete', icon: 'i-heroicons-trash-20-solid' }]
 ];
 
 const selected: Ref<FormSubmission[]> = ref([]);
+
+const q: Ref<string> = ref('')
+
+const filteredRows = computed<FormSubmission[]>(() => {
+  if (!q.value) {
+    return people.value
+  }
+
+  return people.value.filter((person: FormSubmission) => {
+    return Object.values(person).some((value: unknown) => {
+      return String(value).toLowerCase().includes(q.value.toLowerCase())
+    })
+  })
+})
+
+const redirectToForm = () => {
+  router.push('/formEducativo');
+};
 </script>
 
 <template>
-  <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
-    <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
+  <div>
+    <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
+      <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
+      <UInput class="px-3" v-model="q" placeholder="Filter people..." />
+    </div>
+  
+    <UTable :loading="status === 'pending'"
+      :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
+      :progress="{ color: 'primary', animation: 'carousel' }" class="w-full" :columns="selectedColumns" v-model="selected"
+      :rows="filteredRows">
+      <template #materialName-data="{ row }">
+        <span :class="[selected.find(p => p.id === row.id) && 'text-primary-500 dark:text-primary-400']">
+          {{ row.materialName }}
+        </span>
+      </template>
+  
+      <template #actions-data="{ row }">
+        <UDropdown :items="items(row)">
+          <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+        </UDropdown>
+      </template>
+      <template #empty-state>
+      <div class="flex flex-col items-center justify-center py-6 gap-3">
+        <span class="italic text-sm">No one data!</span>
+        <UButton label="Add entry" @click="redirectToForm" />
+      </div>
+    </template>
+    </UTable>
   </div>
-
-  <UTable :columns="selectedColumns" v-model="selected" :rows="people">
-    <template #materialName-data="{ row }">
-      <span :class="[selected.find(p => p.id === row.id) && 'text-primary-500 dark:text-primary-400']">{{
-        row.materialName }}</span>
-    </template>
-
-    <template #actions-data="{ row }">
-      <UDropdown :items="items(row)">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-      </UDropdown>
-    </template>
-  </UTable>
 </template>
