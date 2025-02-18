@@ -1,21 +1,34 @@
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { useNuxtApp } from '#app';
 
 export const useFirebaseDB = () => {
-  const { $db } = useNuxtApp(); // Cambiado de $firebaseApp a $db
+  const { $db } = useNuxtApp();
 
+  // Método para agregar un formulario
   const addFormData = async (formData: any) => {
     try {
       const docRef = await addDoc(collection($db, "formSubmissions"), formData);
-      console.log("Document written with ID: ", docRef.id);
+      console.log("Documento creado con ID:", docRef.id);
       return docRef.id;
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error al agregar documento:", error);
+      throw error;
+    }
+  };
+
+  // Método para obtener todos los formularios
+  const getFormSubmissions = async () => {
+    try {
+      const querySnapshot = await getDocs(collection($db, "formSubmissions"));
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error("Error al obtener documentos:", error);
       throw error;
     }
   };
 
   return {
     addFormData,
+    getFormSubmissions,
   };
 };
