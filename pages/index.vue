@@ -8,8 +8,12 @@ definePageMeta({
   middleware: 'auth' // Redirige a usuarios autenticados fuera de esta página
 });
 
-const redirectTo = () => {
+const redirectToForm = () => {
   router.push('/formEducativo');
+};
+
+const redirectToList = () => {
+  router.push('/list');
 };
 
 
@@ -25,10 +29,10 @@ const redirectTo = () => {
     </div>
 
     <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" variant="link" label="Form" :trailing="false"
-      class="mt-3" @click="redirectTo" />
+      class="mt-3" @click="redirectToForm" />
 
     <UButton icon="material-symbols:list-alt-rounded" size="sm" color="primary" variant="link" label="List"
-      :trailing="false" class="mt-3" href="/" />
+      :trailing="false" class="mt-3" @click="redirectToList" />
   </div>
 </template>
 

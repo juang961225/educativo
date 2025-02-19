@@ -1,12 +1,10 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // Importa Firestore
 
-
-export default defineNuxtPlugin(nuxtApp => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   console.log("CLIENTE CLIENTE CLIENTE");
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCJWWpVB1h_AiHH3bDeI2cWnOB11S39N8g",
     authDomain: "educativo-b97b8.firebaseapp.com",
@@ -16,14 +14,20 @@ export default defineNuxtPlugin(nuxtApp => {
     appId: "1:555139080236:web:32244336caac9be25d7189"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);  // Inicializa Firestore
 
+  try {
+    await setPersistence(auth, browserLocalPersistence);  // Configura persistencia local
+  } catch (error) {
+    console.error("Error al establecer la persistencia:", error);
+  }
 
   return {
     provide: {
-      auth
+      auth,
+      db  // Proporciona Firestore a toda tu app
     }
   }
-})
+});
