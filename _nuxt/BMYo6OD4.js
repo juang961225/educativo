@@ -1,0 +1,1 @@
+import{ab as r,ac as u,a6 as c,ad as i,aa as h}from"./CGkFSr8a.js";const l=r(async(d,f)=>{let t,e;{const a=u(),s=new Promise(o=>{c(a,n=>{o(n)})});if(!([t,e]=i(()=>s),t=await t,e(),t))return h("/login")}});export{l as default};
