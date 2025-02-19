@@ -1,5 +1,11 @@
 <script setup lang="ts">
 const router = useRouter();
+const { logout } = useFirebaseAuth();
+
+const { getFormSubmissions } = useFirebaseDB();
+const formSubmissions: Ref<FormSubmission[]> = ref([]);
+const status = ref<'pending' | 'success' | 'error'>('pending');
+const q: Ref<string> = ref('')
 
 interface FormSubmission {
   id: string;
@@ -23,30 +29,31 @@ interface Column {
   sortable?: boolean;
 }
 
+const links = [{
+  label: 'Home',
+  icon: 'i-heroicons-home',
+  to: '/'
+}, {
+  label: 'List',
+  icon: 'i-heroicons-link'
+}]
+
 const columns: Column[] = [
-  { key: 'id', sortable: true, label: 'ID' },
-  { key: 'contents', sortable: true, label: 'Contents' },
-  { key: 'course', sortable: true, label: 'Course' },
-  { key: 'dba', sortable: true, label: 'DBA' },
-  { key: 'description', sortable: true, label: 'Description' },
-  { key: 'indicator', sortable: true, label: 'Indicator' },
-  { key: 'materialLink', sortable: true, label: 'Material Link' },
   { key: 'materialName', sortable: true, label: 'Material Name' },
   { key: 'materialType', sortable: true, label: 'Material Type' },
+  { key: 'subject', sortable: true, label: 'Subject' },
+  { key: 'course', sortable: true, label: 'Course' },
   { key: 'period', sortable: true, label: 'Period' },
   { key: 'score', sortable: true, label: 'Score' },
-  { key: 'subject', sortable: true, label: 'Subject' },
+  { key: 'description', sortable: true, label: 'Description' },
+  { key: 'contents', sortable: true, label: 'Contents' },
+  { key: 'dba', sortable: true, label: 'DBA' },
+  { key: 'indicator', sortable: true, label: 'Indicator' },
   { key: 'targetPeriod', sortable: true, label: 'Target Period' },
-  { key: 'actions', label: 'Actions'}
+  { key: 'id', sortable: true, label: 'ID' },
+  { key: 'actions', label: 'Actions' }
 ];
-
-
-
-const selectedColumns: Ref<Column[]> = ref([...columns]);
-const { getFormSubmissions } = useFirebaseDB();
-const formSubmissions: Ref<FormSubmission[]> = ref([]);
-
-const status = ref<'pending' | 'success' | 'error'>('pending');
+const selectedColumns: Ref<Column[]> = ref(columns.filter(col => col.key !== 'materialLink'));
 
 const fetchData = async (): Promise<void> => {
   try {
@@ -89,10 +96,6 @@ const items = (row: FormSubmission): Array<Array<{ label: string; icon: string; 
   [{ label: 'Delete', icon: 'i-heroicons-trash-20-solid' }]
 ];
 
-const selected: Ref<FormSubmission[]> = ref([]);
-
-const q: Ref<string> = ref('')
-
 const filteredRows = computed<FormSubmission[]>(() => {
   if (!q.value) {
     return people.value
@@ -112,32 +115,38 @@ const redirectToForm = () => {
 
 <template>
   <div>
+    <div class=" flex justify-between">
+      <UBreadcrumb :links="links" />
+      <UButton class="" @click="logout">
+        Logout
+      </UButton>
+    </div>
     <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
       <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
       <UInput class="px-3" v-model="q" placeholder="Filter people..." />
     </div>
-  
+
     <UTable :loading="status === 'pending'"
       :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
-      :progress="{ color: 'primary', animation: 'carousel' }" class="w-full" :columns="selectedColumns" v-model="selected"
+      :progress="{ color: 'primary', animation: 'carousel' }" class="w-full" :columns="selectedColumns"
       :rows="filteredRows">
       <template #materialName-data="{ row }">
-        <span :class="[selected.find(p => p.id === row.id) && 'text-primary-500 dark:text-primary-400']">
+        <a :href="row.materialLink" target="_blank"  class="text-primary-500 underline">
           {{ row.materialName }}
-        </span>
+        </a>
       </template>
-  
+
       <template #actions-data="{ row }">
         <UDropdown :items="items(row)">
           <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
         </UDropdown>
       </template>
       <template #empty-state>
-      <div class="flex flex-col items-center justify-center py-6 gap-3">
-        <span class="italic text-sm">No one data!</span>
-        <UButton label="Add entry" @click="redirectToForm" />
-      </div>
-    </template>
+        <div class="flex flex-col items-center justify-center py-6 gap-3">
+          <span class="italic text-sm">No one data!</span>
+          <UButton label="Add entry" @click="redirectToForm" />
+        </div>
+      </template>
     </UTable>
   </div>
 </template>
