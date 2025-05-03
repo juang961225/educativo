@@ -28,6 +28,8 @@ const redirectToList = () => {
       </UButton>
     </div>
 
+    <div>esto es una prueba</div>
+
     <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" variant="link" label="Form" :trailing="false"
       class="mt-3" @click="redirectToForm" />
 
